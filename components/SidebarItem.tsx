@@ -4,7 +4,6 @@ import { LucideIcon } from 'lucide-react';
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
 
 type Props = {
   icon: LucideIcon;
