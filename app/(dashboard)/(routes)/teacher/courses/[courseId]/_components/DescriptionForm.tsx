@@ -8,7 +8,8 @@ import {
   FormControl,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Course } from '@prisma/client';
 import axios from 'axios';
@@ -25,12 +26,12 @@ interface Props {
 }
 
 const formSchema = z.object({
-  title: z.string().min(1, {
-    message: 'Title is required',
+  description: z.string().min(1, {
+    message: 'Description is required',
   }),
 });
 
-export const TitleForm = ({ initialData, courseId }: Props) => {
+export const DescriptionForm = ({ initialData, courseId }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const toggleEdit = () => setIsEditing((prevState) => !prevState);
@@ -40,7 +41,7 @@ export const TitleForm = ({ initialData, courseId }: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: initialData.title,
+      description: initialData?.description || '',
     },
   });
 
@@ -60,19 +61,27 @@ export const TitleForm = ({ initialData, courseId }: Props) => {
   return (
     <div className="mt-6 border bg-slate-100 rounded-md p-4">
       <div className="font-medium flex items-center justify-between">
-        <p className="text-sm">Course Title</p>
+        <p className="text-sm">Course description</p>
         <Button onClick={toggleEdit} variant="ghost">
           {isEditing ? (
             <>Cancel</>
           ) : (
             <>
               <Pencil className="h-4 w-4 mr-2" />
-              Edit title
+              Edit description
             </>
           )}
         </Button>
       </div>
-      {!isEditing && <p className="text-sm mt-2">{initialData.title}</p>}
+      {!isEditing && (
+        <p
+          className={cn('text-sm mt-2', {
+            'text-slate-500 italic': !initialData.description,
+          })}
+        >
+          {initialData.description || 'No description'}
+        </p>
+      )}
       {isEditing && (
         <Form {...form}>
           <form
@@ -81,13 +90,13 @@ export const TitleForm = ({ initialData, courseId }: Props) => {
           >
             <FormField
               control={form.control}
-              name="title"
+              name="description"
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
+                    <Textarea
                       disabled={isSubmitting}
-                      placeholder="e.g. 'Advanced web development'"
+                      placeholder="e.g. 'This course is about...'"
                       {...field}
                     />
                   </FormControl>
